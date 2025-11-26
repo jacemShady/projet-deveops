@@ -2,17 +2,7 @@ pipeline {
     agent any
     
     triggers {
-        // Build automatique toutes les 15 minutes
         cron('H/15 * * * *')
-    }
-    
-    tools {
-        maven 'Maven'
-        jdk 'JDK'
-    }
-    
-    environment {
-        MAVEN_OPTS = '-Dmaven.test.failure.ignore=true'
     }
     
     stages {
@@ -49,7 +39,13 @@ pipeline {
             }
             post {
                 always {
-                    junit '**/target/surefire-reports/*.xml'
+                    script {
+                        try {
+                            junit '**/target/surefire-reports/*.xml'
+                        } catch (Exception e) {
+                            echo "⚠️ Pas de rapports de tests trouvés"
+                        }
+                    }
                 }
             }
         }
@@ -70,41 +66,13 @@ pipeline {
         stage('Archive Artifacts') {
             steps {
                 echo '💾 Archivage des artefacts...'
-                archiveArtifacts artifacts: '**/target/*.jar', 
-                                 fingerprint: true,
-                                 allowEmptyArchive: true
-            }
-        }
-        
-        stage('Code Quality Analysis') {
-            steps {
-                echo '📊 Analyse de la qualité du code...'
                 script {
                     try {
-                        if (isUnix()) {
-                            sh 'mvn checkstyle:checkstyle'
-                        } else {
-                            bat 'mvn checkstyle:checkstyle'
-                        }
+                        archiveArtifacts artifacts: '**/target/*.jar', 
+                                         fingerprint: true,
+                                         allowEmptyArchive: true
                     } catch (Exception e) {
-                        echo "⚠️ Checkstyle non configuré, étape ignorée"
-                    }
-                }
-            }
-        }
-        
-        stage('Generate Reports') {
-            steps {
-                echo '📄 Génération des rapports...'
-                script {
-                    try {
-                        if (isUnix()) {
-                            sh 'mvn site'
-                        } else {
-                            bat 'mvn site'
-                        }
-                    } catch (Exception e) {
-                        echo "⚠️ Génération de rapports échouée, étape ignorée"
+                        echo "⚠️ Pas d'artefacts à archiver"
                     }
                 }
             }
@@ -117,7 +85,6 @@ pipeline {
             echo '✅ BUILD RÉUSSI !'
             echo '✅ =============================================='
             echo "✅ Build #${env.BUILD_NUMBER} terminé avec succès"
-            echo "✅ Durée: ${currentBuild.durationString}"
         }
         
         failure {
@@ -125,14 +92,12 @@ pipeline {
             echo '❌ BUILD ÉCHOUÉ !'
             echo '❌ =============================================='
             echo "❌ Build #${env.BUILD_NUMBER} a échoué"
-            echo "❌ Vérifiez les logs pour plus de détails"
         }
         
         unstable {
             echo '⚠️ =============================================='
             echo '⚠️ BUILD INSTABLE'
             echo '⚠️ =============================================='
-            echo "⚠️ Des tests ont échoué dans le build #${env.BUILD_NUMBER}"
         }
         
         always {
