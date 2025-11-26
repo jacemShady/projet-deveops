@@ -7,11 +7,9 @@ pipeline {
     
     stages {
         stage('Checkout') {
-            steps {
-                echo '📥 Récupération du code source depuis Git...'
-                checkout scm
-            }
+            echo "📥 Code récupéré automatiquement."
         }
+    }
         
         stage('Build') {
             steps {
