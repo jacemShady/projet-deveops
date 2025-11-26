@@ -7,10 +7,11 @@ pipeline {
     
     stages {
         stage('Checkout') {
-            echo "📥 Code récupéré automatiquement."
+            steps {
+                echo "📥 Code récupéré automatiquement."
+            }
         }
-    }
-        
+
         stage('Build') {
             steps {
                 echo '🔨 Construction du projet Maven...'
@@ -23,7 +24,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Test') {
             steps {
                 echo '🧪 Exécution des tests unitaires...'
@@ -47,7 +48,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Package') {
             steps {
                 echo '📦 Packaging de l\'application...'
@@ -60,7 +61,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Archive Artifacts') {
             steps {
                 echo '💾 Archivage des artefacts...'
