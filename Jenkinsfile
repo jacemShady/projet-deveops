@@ -1,10 +1,6 @@
 pipeline {
     agent any
     
-    triggers {
-        cron('H/15 * * * *')
-    }
-    
     environment {
         DOCKER_IMAGE = 'slm334/studentmanagement'
         DOCKER_TAG = "${env.BUILD_NUMBER}"
