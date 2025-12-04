@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Recuperation du code') {
             steps {
-                git branch: 'main', 
+                git branch: 'master', 
                     url: 'https://github.com/jacemShady/projet-deveops.git'
             }
         }
