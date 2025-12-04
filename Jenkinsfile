@@ -14,12 +14,21 @@ pipeline {
                 sh 'mvn clean package -DskipTests'
             }
         }
+
+        stage('Analyse SonarQube') {
+            steps {
+                withSonarQubeEnv('sonar') {
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=studentmanagement -Dsonar.host.url=http://localhost:9000'
+                }
+            }
+        }
         
         stage('Creation image Docker') {
             steps {
                 sh 'docker build -t slm334/studentmanagement .'
             }
         }
+        
         
         stage('Publication sur Docker Hub') {
             steps {
@@ -40,6 +49,7 @@ pipeline {
                 sh 'docker run -d -p 8081:8080 --name studentmanagement-app slm334/studentmanagement'
             }
         }
+        
     }
     
     post {
