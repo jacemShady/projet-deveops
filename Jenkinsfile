@@ -44,10 +44,15 @@ pipeline {
     
     post {
         success {
-            echo 'Pipeline execute avec succes'
+            mail to: 'guesmijacem8@gmail.com',
+                 subject: 'Build Successful',
+                 body: 'La build a réussi.'
         }
         failure {
-            echo 'Echec du pipeline'
+            mail to: 'guesmijacem8@gmail.com',
+                 subject: 'Build Failed',
+                 body: 'La build a échoué.'
         }
     }
+
 }
