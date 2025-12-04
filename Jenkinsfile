@@ -23,10 +23,15 @@ pipeline {
         
         stage('Publication sur Docker Hub') {
             steps {
-                sh 'docker login -u slm334 -p dckr_pat_VotreToken'
-                sh 'docker push slm334/studentmanagement'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
+                    sh '''
+                        echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push slm334/studentmanagement
+                    '''
+                }
             }
         }
+
         
         stage('Deploiement') {
             steps {
