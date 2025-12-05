@@ -18,21 +18,24 @@ pipeline {
         stage('Start SonarQube') {
             steps {
                 sh '''
-                    docker start sonarqube || \
-                    docker run -d --name sonarqube -p 9000:9000 sonarqube:lts
-                    echo " Waiting for SonarQube to be ready..."
-            
-                    # wait until localhost:9000 returns HTTP 200
-                    for i in {1..30}; do
-                        if curl -s http://localhost:9000 > /dev/null; then
-                            echo "SonarQube is ready!"
+                    echo "Starting SonarQube container..."
+                    docker start sonarqube || docker run -d --name sonarqube -p 9000:9000 sonarqube:lts
+        
+                    echo "Waiting for SonarQube to be ready..."
+        
+                    # wait up to 120 seconds
+                    for i in {1..40}; do
+                        if curl -s http://localhost:9000/api/system/status | grep -q '"status":"UP"'; then
+                            echo "SonarQube is UP!"
                             break
                         fi
-                        echo "Still starting... ($i/30)"
-                        sleep 5
+                        echo "Still starting... ($i/40)"
+                        sleep 3
                     done
                 '''
             }
+        }
+
         }
 
         stage('Analyse SonarQube') {
