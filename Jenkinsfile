@@ -15,6 +15,15 @@ pipeline {
             }
         }
 
+        stage('Start SonarQube') {
+            steps {
+                sh '''
+                    docker start sonarqube || \
+                    docker run -d --name sonarqube -p 9000:9000 sonarqube:lts
+                '''
+            }
+        }
+
         stage('Analyse SonarQube') {
             steps {
                 withSonarQubeEnv('sonar') {
