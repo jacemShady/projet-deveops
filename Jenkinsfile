@@ -36,8 +36,6 @@ pipeline {
             }
         }
 
-        }
-
         stage('Analyse SonarQube') {
             steps {
                 withSonarQubeEnv('sonar') {
