@@ -20,6 +20,17 @@ pipeline {
                 sh '''
                     docker start sonarqube || \
                     docker run -d --name sonarqube -p 9000:9000 sonarqube:lts
+                    echo " Waiting for SonarQube to be ready..."
+            
+                    # wait until localhost:9000 returns HTTP 200
+                    for i in {1..30}; do
+                        if curl -s http://localhost:9000 > /dev/null; then
+                            echo "SonarQube is ready!"
+                            break
+                        fi
+                        echo "Still starting... ($i/30)"
+                        sleep 5
+                    done
                 '''
             }
         }
