@@ -18,8 +18,8 @@ pipeline {
         stage('Start SonarQube') {
             steps {
                 sh '''
-                    sudo docker start sonarqube || \
-                    sudo docker run -d --name sonarqube -p 9000:9000 sonarqube:lts
+                    docker start sonarqube || \
+                    docker run -d --name sonarqube -p 9000:9000 sonarqube:lts
                 '''
             }
         }
